@@ -54,13 +54,16 @@ document.addEventListener('DOMContentLoaded', function() {
             var data = {};
 
             formData.forEach((value, key) => {
-                // Ensure data is mapped correctly for the Java DTO (ContactForm.java)
+                // Handle multi-select fields (checkboxes)
                 if (key.endsWith('[]')) {
-                    key = key.slice(0, -2); // method[], time[], interest[]
+                    key = key.slice(0, -2);
                     data[key] = data[key] || [];
                     data[key].push(value);
-                } else {
-                    data[key] = value; // fName, lName, email, phone, questions, website
+                } 
+                // Handle all single inputs (fName, email, phone, etc.)
+                else {
+                    // THE FIX: Send null if the field is completely empty
+                    data[key] = (value.trim() === '') ? null : value.trim();
                 }
             });
             
