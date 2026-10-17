@@ -1,57 +1,171 @@
-# ysl-lawn-care
-YSL Lawn Care – Website
-Responsive business website for YSL Lawn Care LLC, featuring a modern front-end and a Node.js + Express backend to handle lead capture via contact forms. Designed with accessibility, scalability, and future deployment in mind.
-🚀 Overview
-This project is a full-featured small business site built for a Colorado-based lawn care company. It includes a complete front-end layout and a secure contact form backend using Node.js, Express, and Nodemailer. The website is built to scale, with modular HTML/CSS structure, backend email routing, and accessibility enhancements following WCAG 2.1 and Google Web Vitals.
-🧰 Tech Stack
-•	Frontend: HTML5, CSS3, JavaScript (Vanilla)
-•	Backend: Node.js, Express.js, Nodemailer
-•	Dev Tools: Git, GitHub, VS Code, dotenv
-•	Accessibility: ARIA roles, keyboard navigation
-•	SEO/UX: Responsive meta tags, sitemap, robots.txt
-📂 Project Structure
-ysl-lawn-care/
-├── public/
+```markdown
+# YSL Lawn Care & Snow Removal — Web Client
+
+A fast, responsive, and accessible client-side web application built for YSL Lawn Care & Snow Removal. This repository represents the modernized frontend interface, architected as a decoupled static platform deployed via CDN (Netlify) and integrated with a dedicated Java Spring Boot microservice on Render.
+
+---
+
+## Architecture & Integration
+
+This client operates within a decoupled Jamstack architecture:
+* **Frontend Client (`ysl-lawn-care-refactor`):** Semantic HTML5, modern CSS3 (Flexbox/Grid), and Vanilla ES6+ JavaScript. Hosted on Netlify edge nodes for rapid asset delivery and high Core Web Vitals performance.
+* **Backend Microservice (`ysl-lawn-care-api-java`):** Java 17 / Spring Boot service containerized with Docker and hosted on Render.
+* **Communication Contract:** Client form submissions dispatch asynchronous `POST` requests via the `fetch()` API delivering JSON payloads directly to the Spring Boot REST endpoint (`/api/contact-form`).
+
+
+```
+
++------------------------------------+        POST /api/contact-form       +------------------------------------+
+|                                    | ----------------------------------> |                                    |
+|   Frontend Client (Netlify Edge)   |           (JSON Payload)            |  Spring Boot Service (Render Host) |
+|   - Contact Form UI                |                                     |  - ContactController.java          |
+|   - Vanilla JS fetch() Handler     | <---------------------------------- |  - EmailService (JavaMailSender)   |
+|                                    |           HTTP 200 / Error          |                                    |
++------------------------------------+                                     +------------------------------------+
+
+```
+
+---
+
+## Project Structure
+
+```text
+ysl-lawn-care-refactor/
+│
+├── public/                     # Static production distribution
+│   ├── index.html              # Landing page & primary services
+│   ├── about-us.html           # Company bio & operations background
+│   ├── gallery.html            # Completed work showcases
+│   ├── contact-us.html         # Estimate intake & scheduling form
 │   ├── css/
-│   ├── images/
-│   ├── scripts/
-│   └── *.html
-├── server/
-│   └── server.js
-├── .env.example
-├── .gitignore
-├── README.md
-├── package-lock.json
-└── package.json
-📬 Features
-•	Fully responsive layout for mobile, tablet, and desktop
-•	Contact form submission via secure backend
-•	Spam protection using honeypot technique
-•	Screen reader accessibility (ARIA-friendly)
-•	SEO friendly with sitemap.txt, robots.txt, meta descriptions
-•	Hours of operation, embedded Google Maps, social media links
-⚙️ Setup Instructions
-1.	Clone the repository: git clone https://github.com/SerumDDR/ysl-lawn-care.git
-2.	Navigate to project: cd ysl-lawn-care
-3.	Install dependencies: npm install
-4.	Create a .env file with SMTP_USER, SMTP_PASS, NOTIFY_EMAIL
-5.      Start server: npm start
-6.	Visit site: http://localhost:3000
-✅ To Do / Coming Soon
-•	Connect to database for persistent form storage (MongoDB or MySQL)
-•	Deploy live via Netlify + Render or Vercel
-•	Add auto-responder email confirmation to users
-•	Add Lighthouse + Axe-core automated accessibility checks
-•	Add unit tests and CI for backend routes
-🧪 Accessibility & Testing Tools
-•	WAVE: https://wave.webaim.org/
-•	Chrome Lighthouse: https://developer.chrome.com/docs/lighthouse/
-•	axe-core: https://github.com/dequelabs/axe-core
-•	HTML Validator: https://validator.w3.org/
-🛡️ License
-This project is licensed under the MIT License.
-👨‍💼 Maintainer
-Donnie Ranjel
-📧 ysllawncare@gmail.com
-🌍 Colorado, United States
-🔗 Portfolio: Coming Soon
+│   │   └── styles.css          # Responsive design & typography
+│   └── images/                 # Optimized image assets & favicons
+│
+├── .env.example                # Blueprint for frontend environment variables
+├── .gitignore                  # Git tracking rules
+└── README.md                   # System documentation
+
+```
+
+---
+
+## Backend Integration Details
+
+### 1. API Endpoint Configuration
+
+The contact form script binds to the API base URL defined via environment configuration:
+
+* **Production Endpoint:** `https://ysl-lawn-care-api-java.onrender.com/api/contact-form`
+* **Local Development Endpoint:** `http://localhost:8080/api/contact-form`
+
+### 2. Request Contract (`POST /api/contact-form`)
+
+The contact page collects input parameters and dispatches the following JSON model mapped directly to `ContactForm.java`:
+
+```json
+{
+  "name": "Jane Doe",
+  "phone": "(303) 555-0123",
+  "email": "janedoe@example.com",
+  "address": "123 Main St, Thornton, CO",
+  "service": "Lawn Care",
+  "message": "Need a seasonal aeration and mowing estimate."
+}
+
+```
+
+### 3. Response Handling & States
+
+* **`200 OK`**: Frontend renders an inline success modal/alert and clears the form fields.
+* **`4xx / 5xx Error`**: Gracefully displays an inline error prompt informing the customer to retry or call directly, avoiding silent failures or unhandled promise rejections.
+* **CORS Compliance**: The Spring Boot backend `ContactController` is configured via `@CrossOrigin` to allow requests originating from the Netlify production domain and `localhost` ports.
+
+---
+
+## Local Development Setup
+
+### Prerequisites
+
+* Web browser (Chrome, Firefox, Safari, Edge)
+* Local HTTP server (`Live Server` in VS Code, `npx serve`, or Python HTTP module)
+* *(Optional)* Java 17+ and Maven to run the companion `ysl-lawn-care-api-java` backend locally
+
+### Step-by-Step Installation
+
+1. **Clone the repository:**
+```bash
+git clone [https://github.com/serumddr/ysl-lawn-care-refactor.git](https://github.com/serumddr/ysl-lawn-care-refactor.git)
+cd ysl-lawn-care-refactor
+
+```
+
+
+2. **Configure environment settings:**
+```bash
+cp .env.example .env
+
+```
+
+
+Configure the target API URL inside `.env` or your JavaScript config:
+```env
+API_BASE_URL=http://localhost:8080
+# For production testing:
+# API_BASE_URL=[https://ysl-lawn-care-api-java.onrender.com](https://ysl-lawn-care-api-java.onrender.com)
+
+```
+
+
+3. **Launch the development server:**
+* **Using Python:**
+```bash
+python3 -m http.server 3000 --directory public
+
+```
+
+
+* **Using Node:**
+```bash
+npx serve public
+
+```
+
+
+
+
+4. Navigate to `http://localhost:3000` in your browser.
+
+---
+
+## Production Deployment
+
+* **Hosting:** Netlify (Edge CDN)
+* **Publish Directory:** `public/`
+* **Custom Domain:** Configured via DNS `A` records and `CNAME` targeting Netlify's load balancer.
+
+---
+
+## Related Repositories
+
+* [ysl-lawn-care-api-java](https://www.google.com/search?q=https://github.com/serumddr/ysl-lawn-care-api-java): Dedicated Spring Boot REST backend handling SMTP mail dispatching and contact form routing.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for full details.
+
+```
+
+---
+
+### Terminal Commands to Save & Push
+
+Run these terminal commands from inside your `ysl-lawn-care-refactor` folder:
+
+```bash
+git add README.md
+git commit -m "docs: update root README with complete architecture and backend contract"
+git push origin main
+
+```
